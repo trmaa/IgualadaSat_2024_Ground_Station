@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gráfico con ECharts</title>
+    <!-- Enlace a la librería ECharts -->
+    <script src="https://cdn.jsdelivr.net/npm/echarts@5.2.2/dist/echarts.min.js"></script>
+</head>
+<body>
+    <!-- Div para el gráfico -->
+    <div id="chart" style="width: 600px; height: 400px;"></div>
+    <!-- Botón para añadir un valor random -->
+    <button id="addDataBtn">Añadir Valor Aleatorio</button>
+
+    <script>
+        // Inicialización del gráfico
+        var myChart = echarts.init(document.getElementById('chart'));
+        
+let base = +new Date(1988, 9, 3);
+let oneDay = 24 * 3600 * 1000;
+let data = [[base, Math.random() * 300]];
+for (let i = 1; i < 20000; i++) {
+  let now = new Date((base += oneDay));
+  data.push([+now, Math.round((Math.random() - 0.5) * 20 + data[i - 1][1])]);
+}
+option = {
+  tooltip: {
+    trigger: 'axis',
+    position: function (pt) {
+      return [pt[0], '10%'];
+    }
+  },
+  title: {
+    left: 'center',
+    text: 'Large Ara Chart'
+  },
+  toolbox: {
+    feature: {
+      dataZoom: {
+        yAxisIndex: 'none'
+      },
+      restore: {},
+      saveAsImage: {}
+    }
+  },
+  xAxis: {
+    type: 'time',
+    boundaryGap: false
+  },
+  yAxis: {
+    type: 'value',
+    boundaryGap: [0, '100%']
+  },
+  dataZoom: [
+    {
+      type: 'inside',
+      start: 0,
+      end: 20
+    },
+    {
+      start: 0,
+      end: 20
+    }
+  ],
+  series: [
+    {
+      name: 'Fake Data',
+      type: 'line',
+      smooth: true,
+      symbol: 'none',
+      areaStyle: {},
+      data: data
+    }
+  ]
+};
+
+        // Establecer la configuración en el gráfico
+        myChart.setOption(option);
+
+        // Función para añadir un valor aleatorio
+        document.getElementById('addDataBtn').addEventListener('click', function() {
+            // Generar un valor aleatorio entre 1 y 100
+            var randomValue = Math.floor(Math.random() * 100) + 1;
+            // Obtener los datos actuales del gráfico
+            var xAxisData = myChart.getOption().xAxis[0].data;
+            var seriesData = myChart.getOption().series[0].data;
+            // Obtener la hora actual
+            var now = new Date();
+            // Añadir la hora actual al eje x
+            xAxisData.push(now.toLocaleTimeString());
+            // Añadir el valor aleatorio al eje y
+            seriesData.push(randomValue);
+            // Actualizar los datos en el gráfico
+            myChart.setOption({
+                xAxis: {
+                    data: xAxisData
+                },
+                series: [{
+                    data: seriesData
+                }]
+            });
+        });
+    </script>
+</body>
+</html>
